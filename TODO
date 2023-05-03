@@ -1,0 +1,15 @@
+Todo:
+  ☐ Registering, Logging In, and Logging out
+    Users should be able to create a profile, then login and logout
+  ☐ View a list of all Workstations
+    On the main landing page users should be able to view the list of all 
+    workstations and their current status (available or reserved)
+  ☐ Reserve a Workstation
+    Users should be able to reserve a Workstation at the current point 
+    for a specific period of time 
+  ☐ Release reserved Workstation
+    If a user has a workstation reserved then they should be able to release
+    their reservation at any point during their reserved time
+  ☐ Refresh Rate
+    The page should refresh itself every 30 secs to get new data
+
