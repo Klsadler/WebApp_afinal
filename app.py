@@ -110,7 +110,6 @@ def login():
         user = User.query.filter_by(username=u, password=p).first()
         if user:
             session['user_id'] = user.id
-            print(session['user_id'])
             return 'ok'
         else:
             return 'fail'
