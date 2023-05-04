@@ -30,7 +30,54 @@ class Release extends React.Component{
 	}
 
 class Reserve extends React.Component{
-    // This is where the user will be able to reserve their station 
+    // This is where the user will be able to reserve their station
+	 constructor(props) {
+                super(props);
+                this.state = {
+                        computers: [],
+                        error: null,
+                        pageLoaded: false
+                }
+        }
+
+        reserveComp(computer) {
+                fetch("/api/reserve/" + computer + "/", {
+                        method: "PUT",
+                })
+
+                        .then(
+                                result => result.text()
+                        )
+                        .then(
+                                (result) => {
+                                        if (result == "ok") {
+                                                fetch("/api/statuses/", {
+                                                        method: "GET",
+                                                })
+                                                        .then(
+                                                                result => result.json()
+                                                        )
+                                                        .then(
+                                                                (result) => {
+                                                                        this.setState({
+                                                                                computers: result
+                                                                        })
+                                                                },
+                                                                (error) => {
+                                                                        this.setState({
+                                                                                error: error
+                                                                        })
+                                                                })
+                                                this.props.loggedIn()
+
+                                        }
+                                        else {
+                                                alert("This computer could not be reserved, sorry for the inconvenience.")
+                                        }},
+                                (error) => {
+                                        alert("You have encountered a server or browser error, please try again.")
+                                })}
+
 }
 
 class Register extends React.Component{
