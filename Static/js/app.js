@@ -77,6 +77,38 @@ class Reserve extends React.Component{
                                 (error) => {
                                         alert("You have encountered a server or browser error, please try again.")
                                 })}
+	 render() {
+                if (this.state.pageLoaded) {
+                        return (
+                                <>
+                                <div>{computer} has been reserved.</div>
+                                <div id="computer-table">
+                                <ul>
+                                {this.state.computers.map(computer => {
+                                        <li>
+                                                {computer}
+                                                </li>
+                                })}
+                                </ul>
+                                </div>
+                                </>
+                        )
+                }
+                else {
+                        return(
+                                <>
+                                <h1>
+                                Waiting for Content to Load
+                                </h1>
+                                <strong>
+                                The page content has not loaded yet
+                                </strong>
+                                </>
+                        )
+                }
+
+        }
+
 
 }
 
