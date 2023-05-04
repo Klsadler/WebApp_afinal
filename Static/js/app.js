@@ -1,89 +1,6 @@
-class Release extends React.Component{
+class Release extends React.Component {
     // If a user has a station reserved then this is where they 
     // can release their reservation 
-}
-
-class Reserve extends React.Component{
-    // This is where the user will be able to reserve their station
-	 constructor(props) {
-                super(props);
-                this.state = {
-                        computers: [],
-                        error: null,
-                        pageLoaded: false
-                }
-        }
-
-        reserveComp(computer) {
-                fetch("/api/reserve/" + computer + "/", {
-                        method: "PUT",
-                })
-
-                        .then(
-                                result => result.text()
-                        )
-                        .then(
-                                (result) => {
-                                        if (result == "ok") {
-                                                fetch("/api/statuses/", {
-                                                        method: "GET",
-                                                })
-                                                        .then(
-                                                                result => result.json()
-                                                        )
-                                                        .then(
-                                                                (result) => {
-                                                                        this.setState({
-                                                                                computers: result
-                                                                        })
-                                                                },
-                                                                (error) => {
-                                                                        this.setState({
-                                                                                error: error
-                                                                        })
-                                                                })
-                                                this.props.loggedIn()
-
-                                        }
-                                        else {
-                                                alert("This computer could not be reserved, sorry for the inconvenience.")
-                                        }},
-                                (error) => {
-                                        alert("You have encountered a server or browser error, please try again.")
-                                })}
-	 render() {
-                if (this.state.pageLoaded) {
-                        return (
-                                <>
-                                <div>{computer} has been reserved.</div>
-                                <div id="computer-table">
-                                <ul>
-                                {this.state.computers.map(computer => {
-                                        <li>
-                                                {computer}
-                                                </li>
-                                })}
-                                </ul>
-                                </div>
-                                </>
-                        )
-                }
-                else {
-                        return(
-                                <>
-                                <h1>
-                                Waiting for Content to Load
-                                </h1>
-                                <strong>
-                                The page content has not loaded yet
-                                </strong>
-                                </>
-                        )
-                }
-
-        }
-
-
 }
 
 class Register extends React.Component {
@@ -269,11 +186,131 @@ class Main extends React.Component {
         this.state = {
             computers: [],
             error: null,
-            pageLoaded: false
+            pageLoaded: false,
+            currUserId: "1",
+            allUsers: []
         }
     }
 
+    getUserId() {
+        fetch("/api/getUserId/", {
+            method: "GET"
+        })
+        .then( result => result.text())
+        .then(
+            (result) => {
+                this.setState({
+                    currUserId: result
+                })
+            }
+        )
+    }
+
+    fetchUser() {
+        fetch("/api/getUser/", {
+            method: "GET"
+        })
+        .then(result => result.json())
+        .then( 
+            (result) => {
+                this.setState({
+                    allUsers: result
+                })
+            }
+        )
+    }   
+
+    logout() {
+        fetch("/api/logout/", {
+            method: "GET"
+        })
+        .then(result => result.text())
+        .then(
+            (result) => {
+                if( result == "ok") {
+                    this.props.goToLogin()
+                }
+            }
+        )
+    }
+
+    releaseComp(computer) {
+        fetch("/api/release/" + computer + "/", {
+            method: "PUT",
+        })
+            .then(
+                result => result.text()
+            )
+            .then(
+                (result) => {
+                    if (result == "ok") {
+                        fetch("/api/statuses/", {
+                            method: "GET",
+                        })
+                            .then(
+                                result => result.json()
+                            )
+                            .then(
+                                (result) => {
+                                    this.setState({
+                                        computers: result
+                                    })
+                                },
+                                (error) => {
+                                    this.setState({
+                                        error: error
+                                    })
+                                })
+                    }
+                    else {
+                        alert("This computer could not be reserved, sorry for the inconvenience.")
+                    }
+                },
+                (error) => {
+                    alert("You have encountered a server or browser error, please try again.")
+                })
+    }
+
+    reserveComp(computer) {
+        fetch("/api/reserve/" + computer + "/", {
+            method: "PUT",
+        })
+            .then(
+                result => result.text()
+            )
+            .then(
+                (result) => {
+                    if (result == "ok") {
+                        fetch("/api/statuses/", {
+                            method: "GET",
+                        })
+                            .then(
+                                result => result.json()
+                            )
+                            .then(
+                                (result) => {
+                                    this.setState({
+                                        computers: result
+                                    })
+                                },
+                                (error) => {
+                                    this.setState({
+                                        error: error
+                                    })
+                                })
+                    }
+                    else {
+                        alert("This computer could not be released, sorry for the inconvenience.")
+                    }
+                },
+                (error) => {
+                    alert("You have encountered a server or browser error, please try again.")
+                })
+    }
+
     componentDidMount() {
+        this.getUserId()
+        this.fetchUser()
         fetch("/api/statuses/", {
             method: "GET",
         })
@@ -300,29 +337,53 @@ class Main extends React.Component {
         if (this.state.pageLoaded) {
             return (
                 <><h1>A list of all computers</h1>
+                    <nav><button className="btn btn-danger btn-lg" onClick={() => this.logout()}>Logout</button></nav>
+
                     <div id="computer-table" >
                         <table className="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th scope="col">Computer ID</th>
                                     <th scope="col">Computer Status</th>
+                                    <th scope="col">Reservation</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {this.state.computers.map(computer => {
-                                    let status = ""
-                                    if (!computer.isReserved) {
-                                        status = "Available"
+                                    let status = "Available"
+                                    if (computer.isReserved) {
+                                        for( let user of this.state.allUsers) {
+                                            if( user.id == computer.userID){
+                                                status = `Reserved by ${user.username}`
+                                            }
+                                        }
+                                            if( this.state.currUserId == computer.userID) {
+                                                return (
+                                                    <tr key={computer.id}>
+                                                        <th scope="row">{computer.id}</th>
+                                                        <td>{status}</td>
+                                                        <td><button onClick={() => this.releaseComp(computer.id)}>Release</button></td>
+                                                    </tr>
+                                                )
+                                            }
+                                            else {
+                                                return (
+                                                    <tr key={computer.id}>
+                                                        <th scope="row">{computer.id}</th>
+                                                        <td>{status}</td>
+                                                    </tr>
+                                                )
+                                            }
                                     }
                                     else {
-                                        status = `Reserved by ${computer.userID}`
+                                        return (
+                                            <tr key={computer.id}>
+                                                <th scope="row">{computer.id}</th>
+                                                <td>{status}</td>
+                                                <td><button onClick={() => this.reserveComp(computer.id)}>Reserve</button></td>
+                                            </tr>
+                                        )
                                     }
-                                    return (
-                                        <tr key={computer.id}>
-                                            <th scope="row">{computer.id}</th>
-                                            <td>{status}</td>
-                                        </tr>
-                                    )
                                 })}
                             </tbody>
                         </table>
@@ -341,7 +402,7 @@ class Main extends React.Component {
                 </>
             )
         }
-    }
+    };
 }
 
 class App extends React.Component {
@@ -379,7 +440,9 @@ class App extends React.Component {
         />;
 
         if (this.state.view == "main") {
-            currentComponent = <Main />
+            currentComponent = <Main 
+                goToLogin={() => this.goToLogin()}
+            />
         }
         else if (this.state.view == "register") {
             currentComponent = <Register
