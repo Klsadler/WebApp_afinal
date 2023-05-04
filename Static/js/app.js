@@ -112,7 +112,7 @@ class Reserve extends React.Component{
 
 }
 
-class Register extends React.Component{
+class Register extends React.Component {
     // This is where the new users will be able to create a new account
     makeUser() {
         let newUserFormData = new FormData(document.querySelector("#new-user-form"))
@@ -120,79 +120,173 @@ class Register extends React.Component{
             method: "POST",
             body: newUserFormData
         })
-        .then(
-            result => result.text()
-        )
-        .then(
-            (result) => {
-                if (result == "ok"){
-                    this.props.goToLogin();
+            .then(
+                result => result.text()
+            )
+            .then(
+                (result) => {
+                    if (result == "ok") {
+                        this.props.goToLogin();
+                    }
+                    else {
+                        alert("Your 'Username' has already been taken, please choose a new 'Username' and try again.")
+                    }
+                },
+                (error) => {
+                    alert("You have encountered a server or browser error, please try again. ")
                 }
-                else {
-                    alert("Your 'Username' has already been taken, please choose a new 'Username' and try again.")
-                }
-            },
-            (error) => {
-                alert("You have encountered a server or browser error, please try again. ")
-            }
-        )
+            )
     }
 
     render() {
-        return(
-            <form id="new-user-form">
-                <div
-                    class="input-group-prepend">
-                        <span 
-                            className="input-group-text">
+        return (
+            <div className="row">
+                <div className="mx-auto col-10 col-md-8 col-lg-6">
+                    <form id="new-user-form">
+                        <div className="input-group input-group-lg">
+                            <span
+                                className="input-group-text">
                                 Username
-                        </span>
-                </div>
-                <input 
-                    type="text" 
-                    className="form-control"
-                    name="username"
-                    />
-                <div
-                    class="input-group-prepend">
-                        <span 
-                            className="input-group-text">
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="username"
+                            />
+                        </div>
+                        <div className="input-group input-group-lg">
+                            <span
+                                className="input-group-text">
                                 Password
-                        </span>
-                </div>
-                <input 
-                    type="password" 
-                    className="form-control"
-                    name="password"
-                    />
-                <div
-                    class="input-group-prepend">
-                        <span 
-                            className="input-group-text">
+                            </span>
+                            <input
+                                type="password"
+                                className="form-control"
+                                name="password"
+                            />
+                        </div>
+                        <div className="input-group input-group-lg">
+                            <span
+                                className="input-group-text">
                                 Email
-                        </span>
+                            </span>
+                            <input
+                                type="email"
+                                className="form-control"
+                                name="email"
+                            />
+                        </div>
+                        <div className="col border-end  d-flex justify-content-center align-items-center">
+                            <button
+                                id="new-user-button"
+                                className="btn btn-success btn-lg "
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.makeUser();
+                                }}>
+                                Make a New Profile
+                            </button>
+                        </div>
+                        <div className="col border-end  d-flex justify-content-center align-items-center">
+                            <button
+                                id="go-back-login"
+                                className="btn btn-primary btn-lg "
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.props.goToLogin();
+                                }}>
+                                Go Back to Login
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <input 
-                    type="email" 
-                    className="form-control"
-                    name="email"
-                    />
-                <br />
-                <button 
-                    id="new-user-button"
-                    className="btn btn-primary mb-3"
-                    onClick={(event) => {
-                        event.preventDefault();
-                        this.makeUser();
-                    }}>
-                        Make a New Profile
-                </button>
-            </form>
+            </div>
         )
     }
 }
 
-class Main extends React.Component{
+class Login extends React.Component {
+    // This will be the first loading page, and will be where the uses logins form 
+
+    loginRequest() {
+        let loginFormData = new FormData(document.querySelector("#login-form"))
+        fetch("/api/login/", {
+            method: "POST",
+            body: loginFormData
+        })
+            .then(
+                result => result.text()
+            )
+            .then(
+                (result) => {
+                    if (result == "ok") {
+                        this.props.loggedIn();
+                    }
+                    else {
+                        alert("Your login failed due to a bad Username/Password pair, please try again.");
+                    }
+                },
+                (error) => {
+                    alert("You have encountered a server or browser error, please try again. ")
+                }
+            )
+    }
+
+    render() {
+        return (
+            <div className="row">
+                <div className="mx-auto col-10 col-md-8 col-lg-6">
+                    <form id="login-form">
+                        <div className="input-group input-group-lg">
+                            <span className="input-group-text">
+                                Username
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="username"
+                            />
+                        </div>
+                        <div className="input-group input-group-lg">
+                            <span className="input-group-text">
+                                Password
+                            </span>
+                            <input
+                                type="password"
+                                className="form-control"
+                                name="password"
+                            />
+                        </div>
+                        <div className="col border-end  d-flex justify-content-center align-items-center">
+                            <button
+                                id="login-button"
+                                className="btn btn-primary btn-lg"
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.loginRequest();
+                                }}>
+                                Login
+                            </button>
+                        </div>
+                        <div className="col border-end  d-flex justify-content-center align-items-center">
+                            <button
+                                id="register-button"
+                                className="btn btn-success btn-lg"
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.props.register();
+                                }}>
+                                Make a New Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        )
+    }
+}
+
+class Main extends React.Component {
     // This is the main landing page for logged in users, 
     // form here they can see the current state of all stations 
 
@@ -209,47 +303,66 @@ class Main extends React.Component{
         fetch("/api/statuses/", {
             method: "GET",
         })
-        .then(
-            result => result.json()
-        )
-        .then(
-            (result) => {
-                this.setState({
-                    computers: result,
-                    pageLoaded: true
-                })
-            },
-            (error) => {
-                this.setState({
-                    error: error,
-                    pageLoaded: true
-                })
-            }
-        )
+            .then(
+                result => result.json()
+            )
+            .then(
+                (result) => {
+                    this.setState({
+                        computers: result,
+                        pageLoaded: true
+                    })
+                },
+                (error) => {
+                    this.setState({
+                        error: error,
+                        pageLoaded: true
+                    })
+                }
+            )
     }
 
     render() {
-        if( this.state.pageLoaded){
-            return(
-                <div id="computer-table">
-                    <ul>
-                        {this.state.computers.map(computer => {
-                            <li>
-                                {computer}
-                            </li>
-                        })}
-                    </ul>
-                </div>
+        if (this.state.pageLoaded) {
+            return (
+                <><h1>A list of all computers</h1>
+                    <div id="computer-table" >
+                        <table className="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Computer ID</th>
+                                    <th scope="col">Computer Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.computers.map(computer => {
+                                    let status = ""
+                                    if (!computer.isReserved) {
+                                        status = "Available"
+                                    }
+                                    else {
+                                        status = `Reserved by ${computer.userID}`
+                                    }
+                                    return (
+                                        <tr key={computer.id}>
+                                            <th scope="row">{computer.id}</th>
+                                            <td>{status}</td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div></>
             )
         }
         else {
-            return(
+            return (
                 <>
                     <h1>
                         Waiting for Content to Load
                     </h1>
                     <strong>
-                        The page content has not loaded yet
+                        The page content has not loaded yet...please wait
                     </strong>
                 </>
             )
@@ -257,89 +370,9 @@ class Main extends React.Component{
     }
 }
 
-class Login extends React.Component{
-    // This will be the first loading page, and will be where the uses logins form 
-
-    loginRequest() {
-        let loginFormData = new FormData(document.querySelector("#login-form"))
-        fetch("/api/login/", {
-            method: "POST",
-            body: loginFormData
-        })
-        .then(
-            result => result.text()
-        )
-        .then(
-            (result) => {
-                if (result == "ok") {
-                    this.props.loggedIn();
-                }
-                else {
-                    alert("Your login failed due to a bad Username/Password pair, please try again.");
-                }
-            },
-            (error) => {
-                alert("You have encountered a server or browser error, please try again. ")
-            }
-        )
-    }
-
-    render() {
-        return(
-            <form id="login-form">
-                <div
-                    className="input-group-prepend">
-                        <span 
-                            className="input-group-text">
-                                Username
-                        </span>
-                </div>
-                <input 
-                    type="text" 
-                    className="form-control"
-                    name="username"
-                    />
-                <div
-                    className="input-group-prepend">
-                        <span 
-                            className="input-group-text">
-                                Password
-                        </span>
-                </div>
-                <input 
-                    type="password" 
-                    className="form-control"
-                    name="password"
-                    />
-                <br />
-                <button 
-                    id="login-button"
-                    className="btn btn-primary"
-                    onClick={(event) => {
-                        event.preventDefault();
-                        this.loginRequest();
-                    }}>
-                        Login
-                </button>
-                <br />
-                <button 
-                    id="register-button"
-                    className="btn btn-success"
-                    onClick={(event) => {
-                        event.preventDefault();
-                        this.props.register();
-                    }}>
-                        Make a New Profile
-                </button>
-
-            </form>
-        )
-    }
-}
-
-class App extends React.Component{
+class App extends React.Component {
     // This is the main method that will handle loading the app
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -366,23 +399,23 @@ class App extends React.Component{
     }
 
     render() {
-        let currentComponent = <Login 
-                                    loggedIn={() => this.loggedIn()}
-                                    register={() => this.register()}
-                                />;
+        let currentComponent = <Login
+            loggedIn={() => this.loggedIn()}
+            register={() => this.register()}
+        />;
 
         if (this.state.view == "main") {
             currentComponent = <Main />
         }
         else if (this.state.view == "register") {
-            currentComponent = <Register 
-                                    goToLogin={() => this.goToLogin()}
-                                />
+            currentComponent = <Register
+                goToLogin={() => this.goToLogin()}
+            />
         }
 
-        return(
+        return (
             <div className="app">
-                {currentComponent}  
+                {currentComponent}
             </div>
         )
     }
