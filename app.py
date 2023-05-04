@@ -73,7 +73,6 @@ with app.app_context():
 
 DEFAULT_USER_ID = 1
 
-
 def get_user_id():
     return session.get('user_id')
 
@@ -83,6 +82,19 @@ def validate(d, keys):
         if k not in d:
             raise Exception(f'{d} does not contain {k}')
 
+
+@app.route("/api/getUserId/", methods=["GET"])
+def sendUserId():
+    return str(session["user_id"])
+
+@app.route("/api/getUser/", methods=["GET"])
+def sendUsers():
+    allUsers = User.query.all()
+    users = []
+    for user in allUsers:
+        users.append(user.serialize())
+    return jsonify(users)
+    
 
 @app.route('/api/register/', methods=['POST'])
 def register():
@@ -110,6 +122,7 @@ def login():
         user = User.query.filter_by(username=u, password=p).first()
         if user:
             session['user_id'] = user.id
+            # print("The session Id from login is " + session['user_id'])
             return 'ok'
         else:
             return 'fail'
