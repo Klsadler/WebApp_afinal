@@ -1,33 +1,7 @@
 class Release extends React.Component{
     // If a user has a station reserved then this is where they 
     // can release their reservation 
-
-	if desired_computer.is_reserved{
-
-		db.session.remove(desired_computer)
-
-	}
-
-	//create release button	
-          
-	render(){
-		return(
-	
-	alert("Computer has been released")
-		<button 
-          	id="release-button"
-                className="btn btn-primary"
-                onClick={(event) => {
-                	event.preventDefault();
-                        this.releaseUser();
-                    }}>
-                        Release
-                </button>
-	)
-	
-	}
-
-	}
+}
 
 class Reserve extends React.Component{
     // This is where the user will be able to reserve their station
